@@ -76,7 +76,37 @@ Khi người nhận DM đang offline, server lưu tin nhắn vào collection `of
 Khi họ đăng nhập và mở cửa sổ chat, client tự nhận các tin chưa đọc rồi server xóa chúng khỏi
 hàng đợi. DM gửi thành công khi người nhận offline vẫn hiện trong lịch sử của người gửi.
 
+## Luồng CI/CD Pipeline
+
+```mermaid
+flowchart TD
+    A[Push Code / Pull Request] --> B[GitHub Actions / CI Server]
+    
+    subgraph Build Phase
+        B --> C[Setup .NET 10 Environment]
+        C --> D[Restore Nuget Packages]
+        D --> E[Build Solution ChatTcpWinForms.sln]
+    end
+
+    subgraph Test & Quality Phase
+        E --> F[Run Unit Tests]
+        F --> G[Code Analysis / Security Scan]
+    end
+
+    subgraph Artifact & Deployment Phase
+        G --> H{Build Successful?}
+        H -- Yes --> I[Package Release Artifacts]
+        H -- No --> J[Notify Developer / Fail Build]
+        I --> K[Publish / Deploy Release]
+    end
+```
+
 ## Wireshark
 
 Lọc `tcp.port == 5050`, dùng **Follow TCP Stream** để xem gói tin thật — bạn sẽ thấy
 4 byte độ dài đứng trước mỗi khối JSON, đúng như mô tả ở phần "Giao thức" bên trên.
+
+
+## Not Yet
+- UDP video call 
+
