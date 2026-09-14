@@ -16,6 +16,31 @@ ChatTcpWinForms.sln
 `ChatServer` và `ChatClient` đều tham chiếu (`ProjectReference`) tới `ChatProtocol`,
 nên chỉ có **một** định nghĩa message dùng chung cho cả hai bên — tránh lệch giao thức.
 
+### 1. Kiến trúc tổng quan (Architecture Flow)
+
+```mermaid
+flowchart LR
+    subgraph Client [ChatClient - WinForms]
+        A[UI WinForms] <--> B[TCP Client / FrameCodec]
+    end
+
+    subgraph Protocol [ChatProtocol]
+        B <-->|Length-Prefix TCP Stream| C[TCP Server Engine]
+    end
+
+    subgraph Server [ChatServer - Console]
+        C <--> D[MongoDB Driver]
+        C <--> E[JWT & PBKDF2 Auth]
+        C <--> F[Gmail SMTP Client]
+        C <--> G[AI HTTP Client]
+    end
+
+    subgraph External [Dịch vụ bên ngoài]
+        D <--> DB[(MongoDB & GridFS)]
+        F --> SMTP[Gmail Service]
+        G <--> AI[AI Service - Colab/ngrok]
+    end
+```
 ## Giao thức (length-prefix framing)
 
 TCP là một **stream**, không tự có ranh giới message. Mỗi message được đóng khung theo
