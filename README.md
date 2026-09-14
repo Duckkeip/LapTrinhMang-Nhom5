@@ -79,7 +79,7 @@ hàng đợi. DM gửi thành công khi người nhận offline vẫn hiện tro
 ## Luồng CI/CD Pipeline
 
 ```mermaid
-flowchart TD
+flowchart LR
     A[Push Code / Pull Request] --> B[GitHub Actions / CI Server]
     
     subgraph Build Phase
