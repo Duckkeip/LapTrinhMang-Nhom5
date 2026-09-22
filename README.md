@@ -138,6 +138,6 @@ Lọc `tcp.port == 5050`, dùng **Follow TCP Stream** để xem gói tin thật 
 
 
 ## Ý tưởng nhóm
-- UDP video call extension
+- UDP video call extension Tham khảo :https://github.com/livekit/livekit
 - Voicechat real-time
 
