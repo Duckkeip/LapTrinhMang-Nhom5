@@ -2,7 +2,7 @@
 
 Ứng dụng chat đa phòng C# WinForms dùng TCP thuần, MongoDB (tài khoản người dùng) và
 dịch vụ AI riêng (gọi qua HTTP tới AI service đang chạy trên Google Colab/ngrok).
-
+Cấu trúc khá giống với Ứng dụng Discord, Link Tham khảo: https://github.com/discord/discord-open-source
 ## Cấu trúc solution
 
 ```
@@ -41,6 +41,11 @@ flowchart LR
         G <--> AI[AI Service - Colab/ngrok]
     end
 ```
+## Định hướng 
+
+Viết bằng C# tạo 1 winform , cụ thể là folder ChatClient (sẽ được đóng gói thành 1 app install)
+Folder Chat Server + ChatProtocol sẽ được host =  bên thứ 3 để tiện 24/7 hoặc tiếp tục localhost depend vào laptop 
+
 ## Giao thức (length-prefix framing)
 
 TCP là một **stream**, không tự có ranh giới message. Mỗi message được đóng khung theo
@@ -132,6 +137,7 @@ Lọc `tcp.port == 5050`, dùng **Follow TCP Stream** để xem gói tin thật 
 4 byte độ dài đứng trước mỗi khối JSON, đúng như mô tả ở phần "Giao thức" bên trên.
 
 
-## Not Yet
-- UDP video call 
+## Ý tưởng nhóm
+- UDP video call extension
+- Voicechat real-time
 
