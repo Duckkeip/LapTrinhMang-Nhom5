@@ -19,8 +19,7 @@ nên chỉ có **một** định nghĩa message dùng chung cho cả hai bên �
 ### 1. Kiến trúc tổng quan (Architecture Flow)
 
 ```mermaid
-      C <--> G[AI HTTP Client]
-    flowchart LR
+     flowchart LR
     subgraph Client [ChatClient - WinForms]
         A[UI WinForms] <--> B[TCP Client / FrameCodec]
         A <--> LK_Client[LiveKit C# SDK - WebRTC]
@@ -34,7 +33,8 @@ nên chỉ có **một** định nghĩa message dùng chung cho cả hai bên �
         C <--> D[MongoDB Driver]
         C <--> E[JWT & PBKDF2 Auth]
         C <--> F[Gmail SMTP Client]
-      C <--> H[LiveKit Server SDK - Token Gen]
+        C <--> G[AI HTTP Client]
+        C <--> H[LiveKit Server SDK - Token Gen]
     end
 
     subgraph External [Dịch vụ bên ngoài]
