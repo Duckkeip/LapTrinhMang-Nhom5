@@ -339,7 +339,7 @@ hoặc:
 
 ## 4.5. Bảo mật `.env`
 
-**Không đưa `.env` thật lên Git hoặc nộp kèm bài**, vì file này có thể chứa:
+
 
 * MongoDB connection string.
 * Gmail App Password.
@@ -347,13 +347,6 @@ hoặc:
 * AI service URL/API key.
 * Các thông tin cấu hình riêng tư khác.
 
-Chỉ đưa:
-
-```text
-.env.example
-```
-
-vào repository.
 
 `.gitignore` đã loại trừ `.env`.
 
@@ -366,12 +359,12 @@ vào repository.
 * Visual Studio 2022 hoặc mới hơn.
 * .NET SDK >= 8.
 * MongoDB / MongoDB Atlas.
-* Gmail App Password nếu sử dụng chức năng OTP.
+* Gmail Resend nếu sử dụng chức năng OTP.
 * AI Service nếu muốn sử dụng AI.
 * LiveKit nếu muốn sử dụng voice/video.
 
 ---
-
+#Chỉ cho Devs
 ## Bước 1 — Mở solution
 
 Mở:
