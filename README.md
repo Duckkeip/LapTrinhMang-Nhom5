@@ -364,7 +364,7 @@ hoặc:
 * LiveKit nếu muốn sử dụng voice/video.
 
 ---
-#Chỉ cho Devs
+# Chỉ cho Devs
 ## Bước 1 — Mở solution
 
 Mở:
@@ -459,9 +459,6 @@ Sau khi kết nối thành công, người dùng có thể:
 
 * Đăng ký tài khoản.
 * Đăng nhập.
-* Vào phòng `General`.
-* Vào phòng `Random`.
-* Vào phòng `Tech`.
 * Tạo phòng mới.
 * Chat với nhiều người.
 * Xem danh sách người dùng online.
@@ -478,13 +475,7 @@ Sau khi kết nối thành công, người dùng có thể:
 
 ## Chat đa phòng
 
-Server hỗ trợ nhiều phòng chat, mặc định gồm:
-
-```text
-General
-Random
-Tech
-```
+Server hỗ trợ nhiều phòng chat
 
 Người dùng có thể chuyển đổi giữa các phòng và nhận lịch sử tin nhắn của phòng.
 
