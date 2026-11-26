@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>RE-CHAT — Ứng dụng chat đa phòng WebSocket</title>
+<meta name="description" content="RE-CHAT: ứng dụng chat đa phòng viết bằng C# WinForms, WebSocket, MongoDB, AI chat và voice/video LiveKit. Đồ án Lập trình mạng - Nhóm 5.">
+<style>
+  :root{
+    --bg:#1e1f22; --bg2:#2b2d31; --bg3:#313338; --text:#f2f3f5; --muted:#b5bac1;
+    --brand:#5865f2; --brand2:#4752c4; --green:#23a55a; --line:#3f4147;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{font-family:"Segoe UI",system-ui,-apple-system,Roboto,sans-serif;background:var(--bg);color:var(--text);line-height:1.6}
+  a{color:inherit;text-decoration:none}
+  .wrap{max-width:1100px;margin:0 auto;padding:0 20px}
+
+  /* NAV */
+  nav{position:sticky;top:0;z-index:10;background:rgba(30,31,34,.9);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+  nav .wrap{display:flex;align-items:center;justify-content:space-between;height:64px}
+  .logo{font-weight:800;font-size:20px;display:flex;align-items:center;gap:10px}
+  .logo i{display:grid;place-items:center;width:34px;height:34px;border-radius:10px;background:var(--brand);font-style:normal}
+  nav ul{display:flex;gap:24px;list-style:none;font-size:15px;color:var(--muted)}
+  nav ul a:hover{color:#fff}
+  .btn{display:inline-flex;align-items:center;gap:10px;padding:12px 26px;border-radius:999px;font-weight:600;font-size:16px;transition:.2s;border:0;cursor:pointer}
+  .btn-primary{background:var(--brand);color:#fff}
+  .btn-primary:hover{background:var(--brand2);transform:translateY(-1px)}
+  .btn-dark{background:var(--bg2);color:#fff;border:1px solid var(--line)}
+  .btn-dark:hover{background:var(--bg3)}
+  .btn-sm{padding:8px 18px;font-size:14px}
+
+  /* HERO */
+  .hero{position:relative;overflow:hidden;padding:90px 0 70px;background:
+    radial-gradient(900px 400px at 15% 0%,rgba(88,101,242,.35),transparent 60%),
+    radial-gradient(700px 400px at 90% 30%,rgba(35,165,90,.18),transparent 60%),var(--bg)}
+  .hero .wrap{display:grid;grid-template-columns:1.1fr .9fr;gap:48px;align-items:center}
+  .badge{display:inline-block;background:rgba(88,101,242,.18);color:#a5adff;border:1px solid rgba(88,101,242,.4);padding:4px 14px;border-radius:999px;font-size:13px;margin-bottom:18px}
+  h1{font-size:clamp(34px,5vw,56px);line-height:1.12;font-weight:800;margin-bottom:18px}
+  h1 span{background:linear-gradient(90deg,#8e97ff,#57f287);-webkit-background-clip:text;background-clip:text;color:transparent}
+  .hero p.lead{font-size:18px;color:var(--muted);max-width:540px;margin-bottom:30px}
+  .cta{display:flex;flex-wrap:wrap;gap:14px}
+  .meta{margin-top:16px;font-size:13px;color:var(--muted)}
+
+  /* Mock chat window */
+  .mock{background:var(--bg3);border-radius:14px;box-shadow:0 30px 70px rgba(0,0,0,.5);overflow:hidden;border:1px solid var(--line);font-size:14px}
+  .mock-top{display:flex;gap:7px;padding:12px 14px;background:var(--bg);align-items:center}
+  .mock-top b{width:11px;height:11px;border-radius:50%;display:block}
+  .mock-top span{margin-left:10px;color:var(--muted);font-size:13px}
+  .mock-body{display:grid;grid-template-columns:120px 1fr}
+  .side{background:var(--bg2);padding:12px 10px;color:var(--muted);font-size:13px}
+  .side div{padding:5px 8px;border-radius:6px}
+  .side .on{background:#404249;color:#fff}
+  .chat{padding:14px;display:flex;flex-direction:column;gap:12px;min-height:250px}
+  .msg{display:flex;gap:10px}
+  .av{flex:none;width:34px;height:34px;border-radius:50%;display:grid;place-items:center;font-weight:700;font-size:13px}
+  .msg small{color:var(--muted);margin-left:6px;font-size:11px}
+  .msg strong{font-size:14px}
+  .msg p{color:#dbdee1}
+  .typing{color:var(--muted);font-size:12px;margin-top:auto}
+
+  /* SECTIONS */
+  section{padding:80px 0}
+  section.alt{background:var(--bg2)}
+  .sec-title{text-align:center;margin-bottom:48px}
+  .sec-title h2{font-size:clamp(26px,3.5vw,38px);margin-bottom:10px}
+  .sec-title p{color:var(--muted);max-width:640px;margin:0 auto}
+
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:20px}
+  .card{background:var(--bg3);border:1px solid var(--line);border-radius:14px;padding:26px;transition:.2s}
+  section.alt .card{background:var(--bg)}
+  .card:hover{transform:translateY(-4px);border-color:var(--brand)}
+  .card .ic{font-size:30px;margin-bottom:12px}
+  .card h3{font-size:18px;margin-bottom:6px}
+  .card p{color:var(--muted);font-size:15px}
+
+  /* Architecture */
+  .arch{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:14px}
+  .node{background:var(--bg3);border:1px solid var(--line);border-radius:12px;padding:16px 22px;text-align:center;min-width:150px}
+  .node b{display:block;font-size:16px}
+  .node span{font-size:12px;color:var(--muted)}
+  .node.main{border-color:var(--brand);background:rgba(88,101,242,.15)}
+  .arrow{color:var(--brand);font-size:22px}
+  .stack{display:flex;flex-direction:column;gap:10px}
+
+  /* Steps */
+  .steps{counter-reset:s;display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:20px}
+  .step{background:var(--bg3);border:1px solid var(--line);border-radius:14px;padding:26px;position:relative}
+  .step::before{counter-increment:s;content:counter(s);position:absolute;top:-16px;left:22px;width:34px;height:34px;border-radius:50%;background:var(--brand);display:grid;place-items:center;font-weight:700}
+  .step h3{margin:8px 0 6px;font-size:17px}
+  .step p{color:var(--muted);font-size:14px}
+
+  /* Tech table */
+  table{width:100%;border-collapse:collapse;background:var(--bg3);border-radius:14px;overflow:hidden;border:1px solid var(--line)}
+  th,td{text-align:left;padding:13px 20px;border-bottom:1px solid var(--line);font-size:15px}
+  th{background:var(--bg);color:var(--muted);font-weight:600;font-size:13px;text-transform:uppercase;letter-spacing:.05em}
+  tr:last-child td{border-bottom:0}
+  td:first-child{color:var(--muted);width:35%}
+
+  /* Download band */
+  .download{text-align:center;background:linear-gradient(135deg,var(--brand),#3b45c4);border-radius:22px;padding:60px 24px}
+  .download h2{font-size:clamp(26px,4vw,40px);margin-bottom:10px}
+  .download p{opacity:.9;margin-bottom:26px}
+  .download .btn{background:#fff;color:#23272a}
+  .download .btn:hover{background:#eceeff;transform:translateY(-1px)}
+
+  footer{border-top:1px solid var(--line);padding:36px 0;color:var(--muted);font-size:14px}
+  footer .wrap{display:flex;flex-wrap:wrap;justify-content:space-between;gap:14px}
+  footer a:hover{color:#fff}
+
+  @media(max-width:860px){
+    .hero .wrap{grid-template-columns:1fr}
+    nav ul{display:none}
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="wrap">
+    <a href="#" class="logo"><i>💬</i> RE-CHAT</a>
+    <ul>
+      <li><a href="#features">Tính năng</a></li>
+      <li><a href="#architecture">Kiến trúc</a></li>
+      <li><a href="#tech">Công nghệ</a></li>
+      <li><a href="#guide">Hướng dẫn</a></li>
+    </ul>
+    <a href="./RE-CHAT.zip" class="btn btn-primary btn-sm" download>⬇ Tải xuống</a>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="wrap">
+    <div>
+      <span class="badge">Đồ án Lập trình mạng · Nhóm 5</span>
+      <h1>Trò chuyện thời gian thực, <span>gọn nhẹ như Discord</span></h1>
+      <p class="lead">RE-CHAT là ứng dụng chat đa phòng viết bằng C# WinForms, giao tiếp qua WebSocket, lưu trữ bằng MongoDB, tích hợp trợ lý AI và voice/video qua LiveKit.</p>
+      <div class="cta">
+        <a href="./RE-CHAT.zip" class="btn btn-primary" download>⬇ Tải ChatClient cho Windows</a>
+        <a href="https://github.com/Duckkeip/LapTrinhMang-Nhom5" class="btn btn-dark" target="_blank" rel="noopener">⭐ Xem mã nguồn</a>
+      </div>
+      <p class="meta">File .zip · Dành cho Windows 10/11 · Giải nén và chạy ChatClient</p>
+    </div>
+
+    <div class="mock" aria-hidden="true">
+      <div class="mock-top"><b style="background:#ed4245"></b><b style="background:#faa61a"></b><b style="background:#23a55a"></b><span>RE-CHAT — # General</span></div>
+      <div class="mock-body">
+        <div class="side">
+          <div class="on"># General</div>
+          <div># Hoc-tap</div>
+          <div># Random</div>
+          <div style="margin-top:10px;color:#80848e;font-size:11px">ONLINE</div>
+          <div>🟢 Duckkeip</div>
+          <div>🟢 An</div>
+        </div>
+        <div class="chat">
+          <div class="msg"><div class="av" style="background:#5865f2">D</div><div><strong>Duckkeip</strong><small>09:41</small><p>@AI giải thích WebSocket là gì?</p></div></div>
+          <div class="msg"><div class="av" style="background:#23a55a">AI</div><div><strong>AI</strong><small>09:41</small><p>WebSocket là giao thức cho phép giao tiếp hai chiều liên tục giữa client và server…</p></div></div>
+          <div class="msg"><div class="av" style="background:#eb459e">A</div><div><strong>An</strong><small>09:42</small><p>📎 baocao.pdf · 1.2 MB</p></div></div>
+          <div class="typing">Duckkeip đang nhập…</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<section id="features">
+  <div class="wrap">
+    <div class="sec-title">
+      <h2>Mọi thứ bạn cần để trò chuyện</h2>
+      <p>Các chức năng chính của RE-CHAT, được định hướng theo mô hình của các ứng dụng chat hiện đại.</p>
+    </div>
+    <div class="grid">
+      <div class="card"><div class="ic">🏠</div><h3>Chat đa phòng</h3><p>Tạo và chuyển đổi giữa nhiều phòng chat. Khi vào phòng, bạn nhận ngay 50 tin nhắn gần nhất.</p></div>
+      <div class="card"><div class="ic">🟢</div><h3>Người dùng online</h3><p>Xem danh sách đang online, bấm đúp để mở hồ sơ hoặc bắt đầu cuộc trò chuyện riêng.</p></div>
+      <div class="card"><div class="ic">✍️</div><h3>Typing indicator</h3><p>Biết ai đang nhập tin nhắn trong phòng theo thời gian thực.</p></div>
+      <div class="card"><div class="ic">✉️</div><h3>Tin nhắn riêng</h3><p>Nhắn tin trực tiếp giữa hai người. Người nhận offline vẫn nhận được khi đăng nhập lại.</p></div>
+      <div class="card"><div class="ic">📎</div><h3>Gửi file</h3><p>Gửi file đến 12 MB, có thumbnail cho ảnh PNG/JPG và thanh tiến trình khi tải lên/xuống.</p></div>
+      <div class="card"><div class="ic">🤖</div><h3>Trợ lý AI</h3><p>Gõ <code>@AI</code> hoặc <code>/AI</code> kèm câu hỏi, AI sẽ trả lời ngay trong phòng chat.</p></div>
+      <div class="card"><div class="ic">🔐</div><h3>Tài khoản an toàn</h3><p>Đăng ký xác minh OTP qua email, mật khẩu băm PBKDF2 + Salt, hỗ trợ quên mật khẩu.</p></div>
+      <div class="card"><div class="ic">🎙️</div><h3>Voice / Video</h3><p>Hướng phát triển: voice room và video call real-time dựa trên LiveKit và WebRTC.</p></div>
+    </div>
+  </div>
+</section>
+
+<section id="architecture" class="alt">
+  <div class="wrap">
+    <div class="sec-title">
+      <h2>Kiến trúc hệ thống</h2>
+      <p>Client và Server dùng chung một thư viện giao thức <b>ChatProtocol</b>, tránh sai lệch định dạng message giữa hai bên.</p>
+    </div>
+    <div class="arch">
+      <div class="node main"><b>ChatClient</b><span>C# WinForms</span></div>
+      <div class="arrow">⇄</div>
+      <div class="node main"><b>ChatServer</b><span>.NET · WebSocket + JSON</span></div>
+      <div class="arrow">⇄</div>
+      <div class="stack">
+        <div class="node"><b>MongoDB + GridFS</b><span>Tài khoản · tin nhắn · file</span></div>
+        <div class="node"><b>AI Service</b><span>HTTP · Colab / ngrok</span></div>
+        <div class="node"><b>LiveKit</b><span>WebRTC · voice/video</span></div>
+        <div class="node"><b>Gmail SMTP</b><span>Gửi OTP</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="tech">
+  <div class="wrap">
+    <div class="sec-title">
+      <h2>Công nghệ sử dụng</h2>
+    </div>
+    <table>
+      <thead><tr><th>Thành phần</th><th>Công nghệ</th></tr></thead>
+      <tbody>
+        <tr><td>Client</td><td>C# WinForms</td></tr>
+        <tr><td>Server</td><td>C# .NET</td></tr>
+        <tr><td>Giao thức</td><td>WebSocket + JSON (ChatProtocol dùng chung)</td></tr>
+        <tr><td>Cơ sở dữ liệu</td><td>MongoDB · GridFS lưu file</td></tr>
+        <tr><td>Xác thực</td><td>PBKDF2 + Salt · JWT · OTP qua Gmail SMTP</td></tr>
+        <tr><td>AI</td><td>HTTP AI Service (Google Colab / ngrok)</td></tr>
+        <tr><td>Voice/Video</td><td>LiveKit + WebRTC</td></tr>
+        <tr><td>CI/CD &amp; Quản lý mã</td><td>GitHub Actions · Git / GitHub</td></tr>
+        <tr><td>Triển khai Server</td><td>Render</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section id="guide" class="alt">
+  <div class="wrap">
+    <div class="sec-title">
+      <h2>Bắt đầu trong 3 bước</h2>
+    </div>
+    <div class="steps">
+      <div class="step"><h3>Tải về</h3><p>Bấm nút “Tải xuống” để lấy file <code>RE-CHAT.zip</code>.</p></div>
+      <div class="step"><h3>Giải nén &amp; chạy</h3><p>Giải nén và mở <code>ChatClient</code>. Client tự kết nối tới server đã được host.</p></div>
+      <div class="step"><h3>Đăng ký &amp; chat</h3><p>Tạo tài khoản, nhập mã OTP gửi về email, rồi vào phòng và bắt đầu trò chuyện.</p></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="download">
+      <h2>Sẵn sàng trò chuyện?</h2>
+      <p>Tải RE-CHAT miễn phí cho Windows và trải nghiệm ngay.</p>
+      <a href="./RE-CHAT.zip" class="btn" download>⬇ Tải ChatClient (.zip)</a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div>© 2026 RE-CHAT · Đồ án Lập trình mạng — Nhóm 5 · Giấy phép MIT</div>
+    <div>
+      <a href="https://github.com/Duckkeip/LapTrinhMang-Nhom5" target="_blank" rel="noopener">GitHub</a> ·
+      <a href="https://github.com/Duckkeip/LapTrinhMang-Nhom5/blob/main/README.md" target="_blank" rel="noopener">Tài liệu</a> ·
+      <a href="https://github.com/Duckkeip/LapTrinhMang-Nhom5/blob/main/LICENSE" target="_blank" rel="noopener">License</a>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>
