@@ -10,7 +10,7 @@ public record Envelope(string Type, JsonElement Data);
 
 // ==== Cac kieu du lieu (payload) cho tung loai message ====
 // Moi Envelope.Type ("chat", "join", "auth", ...) tuong ung 1 record ben duoi lam "Data".
-
+// Xử lý các loại message trong server và client sẽ dựa vào Type để deserialize Data về đúng record type.
 public record AuthRequest(string Username, string Password);           // "login"
 public record RegisterRequest(string Username, string Password, string Email); // "register-request"
 public record VerifyRegistrationRequest(string Otp);                   // "register-verify"
