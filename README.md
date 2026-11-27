@@ -8,6 +8,10 @@ Link tham khảo: https://github.com/discord/discord-open-source
 
 ---
 
+---
+Web introduction: https://duckkeip.github.io/LapTrinhMang-Nhom5
+---
+
 ## Cấu trúc solution
 
 ```text
